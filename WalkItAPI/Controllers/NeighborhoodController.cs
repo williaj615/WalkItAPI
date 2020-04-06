@@ -97,5 +97,25 @@ namespace WalkItAPI.Controllers
                 }
             }
         }
+        //Create a new neighborhood
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] Neighborhood neighborhood)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"INSERT INTO Neighborhood (NName)
+                                        OUTPUT INSERTED.Id
+                                        VALUES (@NName)";
+                    cmd.Parameters.Add(new SqlParameter("@NName", neighborhood.Name));
+
+                    int newId = (int)cmd.ExecuteScalar();
+                    neighborhood.Id = newId;
+                    return CreatedAtRoute("GetNeighborhood", new { id = newId }, neighborhood);
+                }
+            }
+        }
     }
 }

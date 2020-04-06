@@ -37,7 +37,7 @@ namespace WalkItAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT Id, Date, Duration, WalkerId, DogId FROM Walk";
+                    cmd.CommandText = "SELECT Id, Date, Duration, WalkerId, WalkId FROM Walk";
                     SqlDataReader reader = cmd.ExecuteReader();
                     List<Walk> walks = new List<Walk>();
 
@@ -49,7 +49,7 @@ namespace WalkItAPI.Controllers
                             Date = reader.GetDateTime(reader.GetOrdinal("Date")),
                             Duration = reader.GetInt32(reader.GetOrdinal("Duration")),
                             WalkerId = reader.GetInt32(reader.GetOrdinal("WalkerId")),
-                            DogId = reader.GetInt32(reader.GetOrdinal("DogId"))
+                            DogId = reader.GetInt32(reader.GetOrdinal("WalkId"))
                         };
 
                         walks.Add(walk);
@@ -73,7 +73,7 @@ namespace WalkItAPI.Controllers
                 {
                     cmd.CommandText = @"
                         SELECT
-                            Id, Date, Duration, WalkerId, DogId
+                            Id, Date, Duration, WalkerId, WalkId
                         FROM Walk
                         WHERE Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
@@ -89,7 +89,7 @@ namespace WalkItAPI.Controllers
                             Date = reader.GetDateTime(reader.GetOrdinal("Date")),
                             Duration = reader.GetInt32(reader.GetOrdinal("Duration")),
                             WalkerId = reader.GetInt32(reader.GetOrdinal("WalkerId")),
-                            DogId = reader.GetInt32(reader.GetOrdinal("DogId"))
+                            DogId = reader.GetInt32(reader.GetOrdinal("WalkId"))
                         };
                     }
                     else
@@ -104,3 +104,28 @@ namespace WalkItAPI.Controllers
         }
     }
 }
+
+    //    [HttpPost]
+    //    public async Task<IActionResult> Post([FromBody] Walk walk)
+    //    {
+    //        using (SqlConnection conn = Connection)
+    //        {
+    //            conn.Open();
+    //            using (SqlCommand cmd = conn.CreateCommand())
+    //            {
+    //                cmd.CommandText = @"INSERT INTO Walk (DName, OwnerId, Breed, Notes)
+    //                                    OUTPUT INSERTED.Id
+    //                                    VALUES (@DName, @OwnerId, @Breed, @Notes)";
+    //                cmd.Parameters.Add(new SqlParameter("@DName", walk.Name));
+    //                cmd.Parameters.Add(new SqlParameter("@OwnerId", walk.OwnerId));
+    //                cmd.Parameters.Add(new SqlParameter("@Breed", walk.Breed));
+    //                cmd.Parameters.Add(new SqlParameter("@Notes", walk.Notes));
+
+    //                int newId = (int)cmd.ExecuteScalar();
+    //                walk.Id = newId;
+    //                return CreatedAtRoute("GetWalk", new { id = newId }, walk);
+    //            }
+    //        }
+    //    }
+    //}
+

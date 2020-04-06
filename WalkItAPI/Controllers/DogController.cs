@@ -105,70 +105,74 @@ namespace WalkItAPI.Controllers
         }
 
 
-        ////Create a new dog
-        //[HttpPost]
-        //public async Task<IActionResult> Post([FromBody] Dog dog)
-        //{
-        //    using (SqlConnection conn = Connection)
-        //    {
-        //        conn.Open();
-        //        using (SqlCommand cmd = conn.CreateCommand())
-        //        {
-        //            cmd.CommandText = @"INSERT INTO Dog (FirstName, LastName, DepartmentId)
-        //                                OUTPUT INSERTED.Id
-        //                                VALUES (@FirstName, @LastName, @DepartmentId)";
-        //            cmd.Parameters.Add(new SqlParameter("@FirstName", dog.FirstName));
-        //            cmd.Parameters.Add(new SqlParameter("@LastName", dog.LastName));
-        //            cmd.Parameters.Add(new SqlParameter("@DepartmentId", dog.DepartmentId));
+        //Create a new dog
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] Dog dog)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"INSERT INTO Dog (DName, OwnerId, Breed, Notes)
+                                        OUTPUT INSERTED.Id
+                                        VALUES (@DName, @OwnerId, @Breed, @Notes)";
+                    cmd.Parameters.Add(new SqlParameter("@DName", dog.Name));
+                    cmd.Parameters.Add(new SqlParameter("@OwnerId", dog.OwnerId));
+                    cmd.Parameters.Add(new SqlParameter("@Breed", dog.Breed));
+                    cmd.Parameters.Add(new SqlParameter("@Notes", dog.Notes));
 
-        //            int newId = (int)cmd.ExecuteScalar();
-        //            dog.Id = newId;
-        //            return CreatedAtRoute("GetDog", new { id = newId }, dog);
-        //        }
-        //    }
-        //}
+                    int newId = (int)cmd.ExecuteScalar();
+                    dog.Id = newId;
+                    return CreatedAtRoute("GetDog", new { id = newId }, dog);
+                }
+            }
+        }
 
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> Put([FromRoute] int id, [FromBody] Dog dog)
-        //{
-        //    try
-        //    {
-        //        using (SqlConnection conn = Connection)
-        //        {
-        //            conn.Open();
-        //            using (SqlCommand cmd = conn.CreateCommand())
-        //            {
-        //                cmd.CommandText = @"UPDATE Dog
-        //                                    SET FirstName = @FirstName,
-        //                                        LastName = @LastName,
-        //                                        DepartmentId = @DepartmentId
-        //                                    WHERE Id = @id";
-        //                cmd.Parameters.Add(new SqlParameter("@FirstName", dog.FirstName));
-        //                cmd.Parameters.Add(new SqlParameter("@LastName", dog.LastName));
-        //                cmd.Parameters.Add(new SqlParameter("@DepartmentId", dog.DepartmentId));
-        //                cmd.Parameters.Add(new SqlParameter("@id", id));
+        //Update a dog
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put([FromRoute] int id, [FromBody] Dog dog)
+        {
+            try
+            {
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"UPDATE Dog
+                                            SET DName = @DName,
+                                                OwnerId = @OwnerId,
+                                                Breed = @Breed,
+                                                Notes = @Notes
+                                            WHERE Id = @id";
+                        cmd.Parameters.Add(new SqlParameter("@DName", dog.Name));
+                        cmd.Parameters.Add(new SqlParameter("@OwnerId", dog.OwnerId));
+                        cmd.Parameters.Add(new SqlParameter("@Breed", dog.Breed));
+                        cmd.Parameters.Add(new SqlParameter("@Notes", dog.Notes));
+                        cmd.Parameters.Add(new SqlParameter("@id", id));
 
-        //                int rowsAffected = cmd.ExecuteNonQuery();
-        //                if (rowsAffected > 0)
-        //                {
-        //                    return new StatusCodeResult(StatusCodes.Status204NoContent);
-        //                }
-        //                throw new Exception("No rows affected");
-        //            }
-        //        }
-        //    }
-        //    catch (Exception)
-        //    {
-        //        if (!DogExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-        //}
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            return new StatusCodeResult(StatusCodes.Status204NoContent);
+                        }
+                        throw new Exception("No rows affected");
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                if (!DogExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
 
         //[HttpDelete("{id}")]
         //public async Task<IActionResult> Delete([FromRoute] int id)
@@ -205,24 +209,24 @@ namespace WalkItAPI.Controllers
         //    }
         //}
 
-        //private bool DogExists(int id)
-        //{
-        //    using (SqlConnection conn = Connection)
-        //    {
-        //        conn.Open();
-        //        using (SqlCommand cmd = conn.CreateCommand())
-        //        {
-        //            cmd.CommandText = @"
-        //                SELECT Id, FirstName, LastName, DepartmentId
-        //                FROM Dog
-        //                WHERE Id = @id";
-        //            cmd.Parameters.Add(new SqlParameter("@id", id));
+        private bool DogExists(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        SELECT Id, DName, OwnerId, Breed, Notes
+                        FROM Dog
+                        WHERE Id = @id";
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
 
-        //            SqlDataReader reader = cmd.ExecuteReader();
-        //            return reader.Read();
-        //        }
-        //    }
-        //}
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    return reader.Read();
+                }
+            }
+        }
 
     }
 }

@@ -102,5 +102,28 @@ namespace WalkItAPI.Controllers
                 }
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] Owner owner)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"INSERT INTO Owner (OName, Address, NeighborhoodId, Phone)
+                                        OUTPUT INSERTED.Id
+                                        VALUES (@OName, @Address, @NeighborhoodId, @Phone)";
+                    cmd.Parameters.Add(new SqlParameter("@OName", owner.Name));
+                    cmd.Parameters.Add(new SqlParameter("@Address", owner.Address));
+                    cmd.Parameters.Add(new SqlParameter("@NeighborhoodId", owner.NeighborhoodId));
+                    cmd.Parameters.Add(new SqlParameter("@Phone", owner.Phone));
+
+                    int newId = (int)cmd.ExecuteScalar();
+                    owner.Id = newId;
+                    return CreatedAtRoute("GetOwner", new { id = newId }, owner);
+                }
+            }
+        }
     }
 }
