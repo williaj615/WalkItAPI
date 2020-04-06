@@ -38,7 +38,11 @@ namespace WalkItAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT Id, DName, OwnerId, Breed, Notes FROM Dog";
+                    cmd.CommandText = @"
+                        SELECT d.Id, d.DName, d.OwnerId, d.Breed, d.Notes, o.Id, o.OName, o.Address, o.NeighborhoodId, o.Phone
+                        FROM Dog d
+                        LEFT JOIN Owner o
+                        ON d.OwnerId = o.Id";
                     SqlDataReader reader = cmd.ExecuteReader();
                     List<Dog> dogs = new List<Dog>();
 
@@ -50,7 +54,15 @@ namespace WalkItAPI.Controllers
                             Name = reader.GetString(reader.GetOrdinal("DName")),
                             OwnerId = reader.GetInt32(reader.GetOrdinal("OwnerId")),
                             Breed = reader.GetString(reader.GetOrdinal("Breed")),
-                            Notes = reader.GetString(reader.GetOrdinal("Notes"))
+                            Notes = reader.GetString(reader.GetOrdinal("Notes")),
+                            Owner = new Owner
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("OwnerId")),
+                                Name = reader.GetString(reader.GetOrdinal("OName")),
+                                Address = reader.GetString(reader.GetOrdinal("Address")),
+                                NeighborhoodId = reader.GetInt32(reader.GetOrdinal("NeighborhoodId")),
+                                Phone = reader.GetString(reader.GetOrdinal("Phone"))
+                            }
                         };
 
                         dogs.Add(dog);
@@ -74,9 +86,11 @@ namespace WalkItAPI.Controllers
                 {
                     cmd.CommandText = @"
                         SELECT
-                            Id, DName, OwnerId, Breed, Notes
-                        FROM Dog
-                        WHERE Id = @id";
+                            d.Id, d.DName, d.OwnerId, d.Breed, d.Notes, o.Id, o.OName, o.Address, o.NeighborhoodId, o.Phone
+                        FROM Dog d
+                        LEFT JOIN Owner o
+                        ON d.OwnerId = o.Id
+                        WHERE d.Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = cmd.ExecuteReader();
 
@@ -90,7 +104,15 @@ namespace WalkItAPI.Controllers
                             Name = reader.GetString(reader.GetOrdinal("DName")),
                             OwnerId = reader.GetInt32(reader.GetOrdinal("OwnerId")),
                             Breed = reader.GetString(reader.GetOrdinal("Breed")),
-                            Notes = reader.GetString(reader.GetOrdinal("Notes"))
+                            Notes = reader.GetString(reader.GetOrdinal("Notes")),
+                            Owner = new Owner
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("OwnerId")),
+                                Name = reader.GetString(reader.GetOrdinal("OName")),
+                                Address = reader.GetString(reader.GetOrdinal("Address")),
+                                NeighborhoodId = reader.GetInt32(reader.GetOrdinal("NeighborhoodId")),
+                                Phone = reader.GetString(reader.GetOrdinal("Phone"))
+                            }
                         };
                     }
                     else
@@ -174,40 +196,40 @@ namespace WalkItAPI.Controllers
             }
         }
 
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> Delete([FromRoute] int id)
-        //{
-        //    try
-        //    {
-        //        using (SqlConnection conn = Connection)
-        //        {
-        //            conn.Open();
-        //            using (SqlCommand cmd = conn.CreateCommand())
-        //            {
-        //                cmd.CommandText = @"DELETE FROM Dog WHERE Id = @id";
-        //                cmd.Parameters.Add(new SqlParameter("@id", id));
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            try
+            {
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"DELETE FROM Dog WHERE Id = @id";
+                        cmd.Parameters.Add(new SqlParameter("@id", id));
 
-        //                int rowsAffected = cmd.ExecuteNonQuery();
-        //                if (rowsAffected > 0)
-        //                {
-        //                    return new StatusCodeResult(StatusCodes.Status204NoContent);
-        //                }
-        //                throw new Exception("No rows affected");
-        //            }
-        //        }
-        //    }
-        //    catch (Exception)
-        //    {
-        //        if (!DogExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-        //}
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            return new StatusCodeResult(StatusCodes.Status204NoContent);
+                        }
+                        throw new Exception("No rows affected");
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                if (!DogExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
 
         private bool DogExists(int id)
         {
