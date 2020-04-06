@@ -12,5 +12,7 @@ namespace WalkItAPI.Models
         public int NeighborhoodId { get; set; }
 
         public Neighborhood Neighborhood { get; set; }
+
+        public List<Walk> Walks { get; set; }
     }
 }
