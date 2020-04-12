@@ -63,7 +63,7 @@ namespace WalkItAPI.Controllers
 
         //Get a single walker by Id
         [HttpGet("{id}", Name = "GetWalker")]
-        public async Task<IActionResult> Get([FromRoute] int id)
+        public async Task<IActionResult> Get([FromRoute] int id, [FromQuery] string include)
         {
             using (SqlConnection conn = Connection)
             {
@@ -71,27 +71,52 @@ namespace WalkItAPI.Controllers
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                        SELECT
-                            Id, WName, NeighborhoodId
-                        FROM Walker
-                        WHERE Id = @id";
+                        SELECT wr.Id, wr.WName, wr.NeighborhoodId ";
+
+                    if (include == "walks")
+                    {
+                        cmd.CommandText += ", wa.Id, wa.Date, wa.Duration, wa.WalkerId, wa.DogId ";
+                    }
+
+                    cmd.CommandText += "FROM Walker wr ";
+
+                    if (include == "walks")
+                    {
+                        cmd.CommandText += "LEFT JOIN Walk wa ON wr.id = wa.WalkerId ";
+                    }
+
+                    cmd.CommandText += "WHERE wr.Id = @id";
+
                     cmd.Parameters.Add(new SqlParameter("@id", id));
+
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     Walker walker = null;
 
-                    if (reader.Read())
+                    while (reader.Read())
                     {
-                        walker = new Walker
+                        if (walker == null)
                         {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            Name = reader.GetString(reader.GetOrdinal("WName")),
-                            NeighborhoodId = reader.GetInt32(reader.GetOrdinal("NeighborhoodId"))
-                        };
-                    }
-                    else
-                    {
-                        return NotFound();
+                            walker = new Walker
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                Name = reader.GetString(reader.GetOrdinal("WName")),
+                                NeighborhoodId = reader.GetInt32(reader.GetOrdinal("NeighborhoodId")),
+                                Walks = new List<Walk>()
+                            };
+                        }
+
+                        if (include == "walks")
+                        {
+                            walker.Walks.Add(new Walk()
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                Date = reader.GetDateTime(reader.GetOrdinal("Date")),
+                                Duration = reader.GetInt32(reader.GetOrdinal("Duration")),
+                                WalkerId = reader.GetInt32(reader.GetOrdinal("WalkerId")),
+                                DogId = reader.GetInt32(reader.GetOrdinal("DogId"))
+                            });
+                        }
                     }
                     reader.Close();
 
@@ -141,12 +166,12 @@ namespace WalkItAPI.Controllers
                         cmd.Parameters.Add(new SqlParameter("@NeighborhoodId", walker.NeighborhoodId));
                         cmd.Parameters.Add(new SqlParameter("@id", id));
 
-                        int rowsAffected = cmd.ExecuteNonQuery();
-                        if (rowsAffected > 0)
+                        int rowaAffected = cmd.ExecuteNonQuery();
+                        if (rowaAffected > 0)
                         {
                             return new StatusCodeResult(StatusCodes.Status204NoContent);
                         }
-                        throw new Exception("No rows affected");
+                        throw new Exception("No rowa affected");
                     }
                 }
             }
@@ -176,12 +201,12 @@ namespace WalkItAPI.Controllers
                         cmd.CommandText = @"DELETE FROM Walker WHERE Id = @id";
                         cmd.Parameters.Add(new SqlParameter("@id", id));
 
-                        int rowsAffected = cmd.ExecuteNonQuery();
-                        if (rowsAffected > 0)
+                        int rowaAffected = cmd.ExecuteNonQuery();
+                        if (rowaAffected > 0)
                         {
                             return new StatusCodeResult(StatusCodes.Status204NoContent);
                         }
-                        throw new Exception("No rows affected");
+                        throw new Exception("No rowa affected");
                     }
                 }
             }
