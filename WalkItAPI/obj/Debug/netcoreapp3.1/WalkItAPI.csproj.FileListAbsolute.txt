@@ -33,9 +33,14 @@ C:\Users\Jasmine Williams\Desktop\workspace\WalkItAPI\WalkItAPI\bin\Debug\netcor
 C:\Users\Jasmine Williams\Desktop\workspace\WalkItAPI\WalkItAPI\bin\Debug\netcoreapp3.1\runtimes\unix\lib\netcoreapp2.0\System.Runtime.Caching.dll
 C:\Users\Jasmine Williams\Desktop\workspace\WalkItAPI\WalkItAPI\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.0\System.Runtime.Caching.dll
 C:\Users\Jasmine Williams\Desktop\workspace\WalkItAPI\WalkItAPI\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
-C:\Users\Jasmine Williams\Desktop\workspace\WalkItAPI\WalkItAPI\obj\Debug\netcoreapp3.1\WalkItAPI.csproj.CoreCompileInputs.cache
-C:\Users\Jasmine Williams\Desktop\workspace\WalkItAPI\WalkItAPI\obj\Debug\netcoreapp3.1\WalkItAPI.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\Jasmine Williams\Desktop\workspace\WalkItAPI\WalkItAPI\obj\Debug\netcoreapp3.1\WalkItAPI.csproj.CopyComplete
 C:\Users\Jasmine Williams\Desktop\workspace\WalkItAPI\WalkItAPI\obj\Debug\netcoreapp3.1\WalkItAPI.dll
 C:\Users\Jasmine Williams\Desktop\workspace\WalkItAPI\WalkItAPI\obj\Debug\netcoreapp3.1\WalkItAPI.pdb
 C:\Users\Jasmine Williams\Desktop\workspace\WalkItAPI\WalkItAPI\obj\Debug\netcoreapp3.1\WalkItAPI.genruntimeconfig.cache
+C:\Users\Jasmine Williams\Desktop\workspace\WalkItAPI\WalkItAPI\bin\Debug\netcoreapp3.1\Microsoft.OpenApi.dll
+C:\Users\Jasmine Williams\Desktop\workspace\WalkItAPI\WalkItAPI\bin\Debug\netcoreapp3.1\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Jasmine Williams\Desktop\workspace\WalkItAPI\WalkItAPI\bin\Debug\netcoreapp3.1\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Jasmine Williams\Desktop\workspace\WalkItAPI\WalkItAPI\bin\Debug\netcoreapp3.1\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Jasmine Williams\Desktop\workspace\WalkItAPI\WalkItAPI\obj\Debug\netcoreapp3.1\WalkItAPI.csproj.CoreCompileInputs.cache
+C:\Users\Jasmine Williams\Desktop\workspace\WalkItAPI\WalkItAPI\obj\Debug\netcoreapp3.1\WalkItAPI.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Jasmine Williams\Desktop\workspace\WalkItAPI\WalkItAPI\obj\Debug\netcoreapp3.1\WalkItAPI.MvcApplicationPartsAssemblyInfo.cache
