@@ -14,5 +14,7 @@ namespace WalkItAPI.Models
         public string Phone { get; set; }
 
         public Neighborhood Neighborhood { get; set; }
+
+        public List<Dog> Dogs { get; set; }
     }
 }
