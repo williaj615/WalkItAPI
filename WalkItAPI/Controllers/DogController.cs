@@ -31,7 +31,7 @@ namespace WalkItAPI.Controllers
 
         //Get all dogs from the database
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] int? neighborhoodId)
         {
             using (SqlConnection conn = Connection)
             {
@@ -42,7 +42,13 @@ namespace WalkItAPI.Controllers
                         SELECT d.Id, d.DName, d.OwnerId, d.Breed, d.Notes, o.Id, o.OName, o.Address, o.NeighborhoodId, o.Phone
                         FROM Dog d
                         LEFT JOIN Owner o
-                        ON d.OwnerId = o.Id";
+                        ON d.OwnerId = o.Id
+                        WHERE 1 = 1";
+                    if (neighborhoodId != null)
+                    {
+                        cmd.CommandText += " AND o.NeighborhoodId = @NeighborhoodId";
+                        cmd.Parameters.Add(new SqlParameter("@NeighborhoodId", neighborhoodId));
+                    }
                     SqlDataReader reader = cmd.ExecuteReader();
                     List<Dog> dogs = new List<Dog>();
 

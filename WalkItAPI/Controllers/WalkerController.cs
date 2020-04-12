@@ -31,14 +31,21 @@ namespace WalkItAPI.Controllers
 
         //Get all walkers from the database
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] int? neighborhoodId)
         {
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT Id, WName, NeighborhoodId FROM Walker";
+                    cmd.CommandText = @"SELECT Id, WName, NeighborhoodId FROM Walker
+                        WHERE 1 = 1";
+
+                    if (neighborhoodId != null)
+                    {
+                        cmd.CommandText += " AND NeighborhoodId = @NeighborhoodId";
+                        cmd.Parameters.Add(new SqlParameter("@NeighborhoodId", neighborhoodId));
+                    }
                     SqlDataReader reader = cmd.ExecuteReader();
                     List<Walker> walkers = new List<Walker>();
 

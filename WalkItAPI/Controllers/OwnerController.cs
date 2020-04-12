@@ -31,14 +31,20 @@ namespace WalkItAPI.Controllers
 
         //Get all owners from the database
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] string q)
         {
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT Id, OName, Address, NeighborhoodId, Phone FROM Owner";
+                    cmd.CommandText = @"SELECT Id, OName, Address, NeighborhoodId, Phone FROM Owner
+                                        WHERE 1 = 1";
+                    if (q != null)
+                    {
+                        cmd.CommandText += " AND OName LIKE @OName";
+                        cmd.Parameters.Add(new SqlParameter("@OName", "%" + q + "%"));
+                    }
                     SqlDataReader reader = cmd.ExecuteReader();
                     List<Owner> owners = new List<Owner>();
 
@@ -73,12 +79,20 @@ namespace WalkItAPI.Controllers
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                    SELECT o.Id, o.OName, o.Address, o.NeighborhoodId, o.Phone, n.Id, n.NName, d.Id, d.DName, d.OwnerId, d.Breed, d.Notes 
-                    FROM Owner o LEFT Join Neighborhood n ON o.NeighborhoodId = n.Id 
-                    LEFT OUTER JOIN Dog d ON d.OwnerId = o.Id
-                    WHERE o.Id = @id";
+                    SELECT o.Id, o.OName, o.Address, o.NeighborhoodId, o.Phone, d.Id, d.DName, d.OwnerId, d.Breed, d.Notes ";
+                    if (include == "neighborhood")
+                    {
+                        cmd.CommandText += ", n.Id, n.NName ";
+                    }
+                    cmd.CommandText += "FROM Owner o LEFT Join Dog d ON d.OwnerId = o.Id ";
+                    if (include == "neighborhood")
+                    {
+                        cmd.CommandText += "LEFT JOIN Neighborhood n ON n.Id = o.NeighborhoodId ";
+                    }
+                    cmd.CommandText += "WHERE o.Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = cmd.ExecuteReader();
+
 
                     Owner owner = null;
 
@@ -93,12 +107,15 @@ namespace WalkItAPI.Controllers
                                 Address = reader.GetString(reader.GetOrdinal("Address")),
                                 NeighborhoodId = reader.GetInt32(reader.GetOrdinal("NeighborhoodId")),
                                 Phone = reader.GetString(reader.GetOrdinal("Phone")),
-                                Neighborhood = new Neighborhood
-                                {
-                                    Id = reader.GetInt32(reader.GetOrdinal("NeighborhoodId")),
-                                    Name = reader.GetString(reader.GetOrdinal("NName"))
-                                },
                                 Dogs = new List<Dog>()
+                            };
+                        }
+                        if (include == "neighborhood")
+                        {
+                            owner.Neighborhood = new Neighborhood
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("NeighborhoodId")),
+                                Name = reader.GetString(reader.GetOrdinal("NName"))
                             };
                         }
                             owner.Dogs.Add(new Dog()
